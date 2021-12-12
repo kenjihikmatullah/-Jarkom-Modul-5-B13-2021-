@@ -432,3 +432,27 @@ nmap 192.183.7.128
 nmap 192.183.7.131
 ```
 
+## 3. Karena kelompok kalian maksimal terdiri dari 3 orang. Luffy meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 3 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
+
+nano config.sh on Jipangu and Doriki
+```
+iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
+```
+
+
+Kemudian kalian diminta untuk membatasi akses ke Doriki yang berasal dari subnet Blueno, Cipher, Water7 dan Doriki dengan beraturan sebagai berikut
+
+
+## 4. Akses dari subnet Blueno dan Cipher hanya diperbolehkan pada pukul 07.00 - 15.00 pada hari Senin sampai Kamis
+
+Doriki
+```
+iptables -A INPUT -s 192.183.7.0/25 -m time --timestart 07:00 --timestop 15:00 --weekdays Mon,Tue,Wed,Thu -j ACCEPT
+iptables -A INPUT -s 192.183.7.0/25 -m time --timestart 15:01 --timestop 23:59 -j REJECT
+iptables -A INPUT -s 192.183.7.0/25 -m time --timestart 00:00 --timestop 06:59 -j REJECT
+iptables -A INPUT -s 192.183.7.0/25 -m time --timestart 07:00 --timestop 15:00 --weekdays Fri,Sat,Sun -j REJECT
+
+iptables -A INPUT -s 192.183.0.0/22 -m time --timestart 07:00 --timestop 15:00 --weekdays Mon,Tue,Wed,Thu -j ACCEPT
+iptables -A INPUT -s 192.183.0.0/22 -m time --timestart 15:01 --timestop 06:59 -j REJECT
+iptables -A INPUT -s 192.183.0.0/22 -m time --timestart 07:00 --timestop 15:00 --weekdays Fri,Sat,Sun -j REJECT
+```
